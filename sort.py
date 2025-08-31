@@ -35,7 +35,7 @@ def selection(arr_: list[int]) -> SortResult:
                 min_index = index
             index += 1
         # swap
-        arr_[pos], arr_[min_index] = min_index, a
+        arr_[pos], arr_[min_index] = arr_[min_index], a
         pos += 1
     return arr_, (ns() - start), "SELECTION"
 
