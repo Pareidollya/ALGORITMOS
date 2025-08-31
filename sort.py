@@ -27,19 +27,15 @@ def selection(arr_: list[int]) -> SortResult:
     start = ns()
     pos = 0
     for a in arr_:
-        h = {"value": a, "pos": pos}
-        l = {"value": 99999, "pos": 0}
-
         # buscar menor valor do array
         index = pos
+        min_index = index
         for i in arr_[pos:]:
-            if i < l["value"]:
-                l = {"value": i, "pos": index}
-            elif i > h["value"]:
-                h = {"value": i, "pos": index}
+            if i < arr_[min_index]:
+                min_index = index
             index += 1
         # swap
-        arr_[pos], arr_[l["pos"]] = l["value"], a
+        arr_[pos], arr_[min_index] = min_index, a
         pos += 1
     return arr_, (ns() - start), "SELECTION"
 
