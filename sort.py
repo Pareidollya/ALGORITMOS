@@ -1,7 +1,7 @@
 import time
-from typing import TypeAlias, Callable
+from typing import TypeAlias
 
-arr = [64, 25, 12, 22, 11]
+original = [64, 25, 12, 22, 11]
 
 SortResult: TypeAlias = tuple[list[int], int, str]
 
@@ -23,40 +23,51 @@ def ns() -> int:
     return time.perf_counter()
 
 
-def selection(arr_: list[int]) -> SortResult:
+def selection(arr: list[int]) -> SortResult:
     start = ns()
     pos = 0
-    for a in arr_:
+    for a in arr:
         # buscar menor valor do array
         index = pos
         min_index = index
-        for i in arr_[pos:]:
-            if i < arr_[min_index]:
+        for i in arr[pos:]:
+            if i < arr[min_index]:
                 min_index = index
             index += 1
         # swap
-        arr_[pos], arr_[min_index] = arr_[min_index], a
+        arr[pos], arr[min_index] = arr[min_index], a
         pos += 1
-    return arr_, (ns() - start), "SELECTION"
+    return arr, (ns() - start), "SELECTION"
 
 
-def insertion(arr_: list[int]) -> SortResult:
+def insertion(arr: list[int]) -> SortResult:
     start = ns()
-
     pos = 0
-
-    for a in arr_[pos + 1 :]:  # inicia do segundo elemento assumindo ja estar ordenado
+    for a in arr[pos + 1 :]:  # inicia do segundo elemento assumindo ja estar ordenado
         # pos+1 = actual key pos
         # percorrer esse subarray verificando se o valor atual está ordenado
         # avança, comparando o elemento atual com os 2 anteriores e swapa-lo na posição correta
         pos_b = 0
-        for b in arr_[: pos + 1]:
+        for b in arr[: pos + 1]:
             if a < b:
-                arr_[pos_b], arr_[pos + 1] = arr_[pos + 1], arr_[pos_b]
+                arr[pos_b], arr[pos + 1] = arr[pos + 1], arr[pos_b]
             pos_b += 1
         pos += 1
 
-    return arr_, (ns() - start), "INSERTION"
+    return arr, (ns() - start), "INSERTION"
 
 
-showResults(arr, [selection(arr.copy()), insertion(arr.copy())])
+def bubble(arr: list[int]) -> SortResult:
+    start = ns()
+    for a in range(len(arr)):
+        for b in range(len(arr)):
+            if arr[b] > arr[a]:
+                # swap
+                arr[a], arr[b] = arr[b], arr[a]
+    return arr, (ns() - start), "BUBBLE"
+
+
+showResults(
+    original,
+    [selection(original.copy()), insertion(original.copy()), bubble(original.copy())],
+)
