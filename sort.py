@@ -1,7 +1,21 @@
 import time
 from typing import TypeAlias
 
-original = [64, 25, 12, 22, 11]
+original = [
+    64,
+    25,
+    12,
+    22,
+    11,
+    5,
+    2,
+    7,
+    9,
+    3,
+    5,
+    78,
+    0,
+]
 
 SortResult: TypeAlias = tuple[list[int], int, str]
 
