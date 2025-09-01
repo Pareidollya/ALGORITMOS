@@ -40,5 +40,23 @@ def selection(arr_: list[int]) -> SortResult:
     return arr_, (ns() - start), "SELECTION"
 
 
-s = selection(arr.copy())
-showResults(arr, [s])
+def insertion(arr_: list[int]) -> SortResult:
+    start = ns()
+
+    pos = 0
+
+    for a in arr_[pos + 1 :]:  # inicia do segundo elemento assumindo ja estar ordenado
+        # pos+1 = actual key pos
+        # percorrer esse subarray verificando se o valor atual está ordenado
+        # avança, comparando o elemento atual com os 2 anteriores e swapa-lo na posição correta
+        pos_b = 0
+        for b in arr_[: pos + 1]:
+            if a < b:
+                arr_[pos_b], arr_[pos + 1] = arr_[pos + 1], arr_[pos_b]
+            pos_b += 1
+        pos += 1
+
+    return arr_, (ns() - start), "INSERTION"
+
+
+showResults(arr, [selection(arr.copy()), insertion(arr.copy())])
