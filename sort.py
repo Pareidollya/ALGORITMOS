@@ -1,4 +1,5 @@
 import time
+import math
 from typing import TypeAlias
 
 original = [
@@ -13,8 +14,8 @@ original = [
     9,
     3,
     5,
-    78,
-    0,
+    # 78,
+    # 0,
 ]
 
 SortResult: TypeAlias = tuple[list[int], int, str]
@@ -81,7 +82,66 @@ def bubble(arr: list[int]) -> SortResult:
     return arr, (ns() - start), "BUBBLE"
 
 
+# merge bruto sem recursao da silva
+def merge(arr: list[int]) -> SortResult:
+    start = ns()
+
+    l_size = len(arr) // 2
+    r_size = len(arr[l_size:])  # slice start index
+
+    # dividir
+    L = arr[:l_size]
+    R = arr[r_size - 1 :]
+
+    def swap(swap_arr):  # TODO: tem q fazer um swap-back para estar tudo ordenado
+        for a in range(len(swap_arr) - 1):
+            if swap_arr[a] > swap_arr[a + 1]:
+                swap_arr[a], swap_arr[a + 1] = swap_arr[a + 1], swap_arr[a]
+        return swap_arr
+
+    def merge(arr_l, arr_r):
+        merged = []
+
+        l = 0
+        r = 0
+        while r < len(arr_r):
+            # verificar se sobrou, quanto sobrou e adiciona-los a lista
+            if l > len(arr_l):  # é pq acabou l, adiciona sobra de r
+                merged.append(arr_r[r + 1])
+                break
+            elif r > len(arr_r):
+                merged.append(arr[l + 1])
+                break
+
+            if arr_l[l] > arr_r[r]:
+                merged.append(arr_r[r])
+                r += 1
+            else:
+                merged.append(arr_l[l])
+                l += 1
+        # adicionar oq sobrar
+        if l < len(arr_l) - 1:
+            for l_ in arr_l[l:]:
+                merged.append(l_)
+        if r < len(arr_r) - 1:
+            for r_ in arr_r[r:]:
+                merged.append(r_)
+
+        return merged
+
+    L = swap(L)
+    R = swap(R)
+    # first swaps
+
+    return merge(L, R), (ns() - start), "MERGE NAO-RECURSIVO"
+
+
 showResults(
     original,
-    [selection(original.copy()), insertion(original.copy()), bubble(original.copy())],
+    [
+        selection(original.copy()),
+        insertion(original.copy()),
+        bubble(original.copy()),
+        merge(original.copy()),
+    ],
 )
