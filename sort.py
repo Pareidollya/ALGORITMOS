@@ -1,13 +1,23 @@
 import time
+import random
 import math
 from typing import TypeAlias
 
-original = [64, 25, 22, 12, 11, 5, 7, 3, 31, 57, 89, 10]
 
 SortResult: TypeAlias = tuple[list[int], int, str]
 
 
-def getStrList(results: list[int]) -> str:
+def gerar_array(tamanho, limite_min=0, limite_max=100):
+    if tamanho > (limite_max - limite_min + 1):
+        raise ValueError("Intervalo pequeno demais para gerar números únicos.")
+    return random.sample(range(limite_min, limite_max + 1), tamanho)
+
+
+original = gerar_array(100, 1, 101)
+# original = [53, 63, 26, 2, 57, 72, 52, 79, 46, 92, 91]
+
+
+def getStrList(results: list[int], show_max=20) -> str:
     result = ""
     for i in results:
         result = result + " " + str(i)
@@ -15,9 +25,12 @@ def getStrList(results: list[int]) -> str:
 
 
 def showResults(v: list, results: list[SortResult]):
-    print(f"\nArr  :{getStrList(v)}\n")
+    # print(f"\nArr  :{getStrList(v)}\n")
+    print(f"\nArr  :{v}\n")
+
     for result, time_execution, method in results:
-        print(f"{method}\nResut:{getStrList(result)}\nTime : {time_execution:.6f}\n")
+        # getStrList(result)
+        print(f"{method}\nResut: {result}\nTime : {time_execution:.6f}\n")
 
 
 def ns() -> int:
@@ -69,7 +82,7 @@ def bubble(arr: list[int]) -> SortResult:
 
 
 # merge bruto sem recursao da silva
-def merge(arr: list[int]) -> SortResult:
+def merge_nr(arr: list[int]) -> SortResult:
     start = ns()
 
     l_size = len(arr) // 2
@@ -88,9 +101,6 @@ def merge(arr: list[int]) -> SortResult:
                 swap_arr[a], swap_arr[a + 1] = swap_arr[a + 1], swap_arr[a]
             a += 2
         return swap_arr
-
-    L = swap(L)
-    R = swap(R)
 
     # CONQUEEEEEEEEEEER
     # FOR LEN / 2 ( aumentando array e ir conquistando essa poha)
@@ -155,10 +165,61 @@ def merge(arr: list[int]) -> SortResult:
                     r += 1
                     conquested = new_conquested
                     break
-
         return conquested
 
-    return conq(L + R), (ns() - start), "MERGE NAO-RECURSIVO (CAVALOKKKK)"
+    return conq(original), (ns() - start), "MERGE NAO-RECURSIVO (CAVALOKKKK)"
+
+
+def merge_nr2(arr: list[int]) -> SortResult:
+    start = ns()
+    l_size = len(arr) // 2
+
+    # dividir os ultimos ordenando-os
+    def swap(swap_arr) -> list[int]:
+        a = 0
+        while a < (len(swap_arr) - 1):
+            if swap_arr[a] > swap_arr[a + 1]:
+                swap_arr[a], swap_arr[a + 1] = swap_arr[a + 1], swap_arr[a]
+            a += 2
+        return swap_arr
+
+    # SIZE BLOCK L = n (conquistado), R <= 2
+
+    def merge_(arr):
+        merged = [arr[0]]  # merged
+        l, r = 0, 1
+        max_r = 2  # tamanho maximo do bloco R pode ir ate 2
+        new = []
+        while len(merged) < len(arr):
+            R = arr[r:max_r]
+            # bloco R atual
+            if merged[l] <= arr[r]:
+                new.append(merged[l])
+                l += 1
+
+                if l >= len(merged):  # se L passar e sobrar R, anexa R ao fim
+                    new = new + arr[r:max_r]  # adiciona oq sobra de R
+
+                    # avança R para proximo bloco de R
+                    r = max_r
+                    # avança 2 casas de max r caso seja possivel, senão avança uma
+                    max_r = max_r + (2 if max_r + 2 < len(arr) else +1)
+                    l = 0
+                    merged = new
+                    new = []
+            else:
+                new.append(arr[r])
+                r += 1
+                # se R passar e sobrar L, anexa L ao fim
+                if r >= max_r:
+                    new = new + merged[l:]
+                    max_r = max_r + (2 if max_r + 2 < len(arr) else +1)
+                    l = 0
+                    merged = new
+                    new = []
+        return merged
+
+    return merge_(swap(arr)), (ns() - start), "MERGE NAO-RECURSIVO 2"
 
 
 showResults(
@@ -167,6 +228,37 @@ showResults(
         selection(original.copy()),
         insertion(original.copy()),
         bubble(original.copy()),
-        merge(original.copy()),
+        merge_nr(original.copy()),
+        merge_nr2(original.copy()),
+        # merge_nr3(original.copy()),
     ],
 )
+
+
+# def merge_nr3(arr: list[int]) -> SortResult:
+#     start = ns()
+#     n = len(arr)
+#     width = 1
+#     result = arr[:]
+
+#     def merge(left, right):
+#         merged = []
+#         i = j = 0
+#         while i < len(left) and j < len(right):
+#             if left[i] <= right[j]:
+#                 merged.append(left[i])
+#                 i += 1
+#             else:
+#                 merged.append(right[j])
+#                 j += 1
+#         merged.extend(left[i:])
+#         merged.extend(right[j:])
+#         return merged
+
+#     while width < n:
+#         for i in range(0, n, 2 * width):
+#             left = result[i : i + width]
+#             right = result[i + width : i + 2 * width]
+#             result[i : i + 2 * width] = merge(left, right)
+#         width *= 2
+#     return result, (ns() - start), "MERGE NAO-RECURSIVO 3"
