@@ -197,3 +197,39 @@ print("matrix2", getLinkedMatrix(matrix2, show=False))
 print("sum matrix", getLinkedMatrix(sumLinkedMatrix(matrix1, matrix2), show=False))
 
 # busca sequencial
+
+#  O intervalo de um conjunto finito e não vazio de números reais S é definido como
+#  a diferença entre o maior e o menor elementos de S. Para cada representação de S
+#  abaixo elabore um algoritmo para computar o intervalo e calcule a complexidade
+#  destes algoritmos.
+#  a) um vetor ordenado
+#  b) um vetor desordenad
+
+S = gen_arr(maxLimit=11, minLimit=1, size=10)
+x = LinkedList()
+x.addFromArr(S, log=False)
+# menor e maior (desordenado)
+
+actual = x.head
+min_ = x.head
+max_ = x.head
+while actual != None:
+
+    if actual.value <= min_.value:
+        min_ = actual
+    elif actual.value > max_.value:
+        max_ = actual
+
+    actual = actual.next_node
+print("\n\narr unsorted", x.getList())
+print(f"diff ({min_.value}, {max_.value}) { max_.value - min_.value  } ")
+# ordenado
+
+x2 = x.getSegundoMenorkk(optmize=False, sort_original_arr=False)
+
+
+print("sorted", x2.getList())
+print(
+    "diferença é (sorted): ", x2.get(x.len - 1).value - x2.get(0).value
+)  # primeiro - ultimo valor O(n)
+# diff =
