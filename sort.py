@@ -222,6 +222,47 @@ def merge_nr2(arr: list[int]) -> SortResult:
     return merge_(swap(arr)), (ns() - start), "MERGE NAO-RECURSIVO 2"
 
 
+# realizar o merge em pares de blocos.. bloco de tamanho 1 merge com bloco de tamanho 2,
+# par = bloco1 + bloco2.
+# merge = (par[:par/2] + par[par/2:])
+# novo par será de de tamanho 4 no arr, com blocos de tamanho 2.
+# termina qunado o bloco final for do tamanho da lista
+# os não pares se manteem no final da lista. Pois em algum momento será par do bloco maior (haverá 2 blocos)
+def merge_nr3(arr: list[int]) -> SortResult:
+    start = ns()
+
+    def merge_(left: list[int], right: list[int]):
+        r = 0
+        l = 0
+        result = []
+        while l < len(left) and r < len(right):
+            if left[l] <= right[r]:
+                result.append(left[l])
+                l += 1
+            else:
+                result.append(right[r])
+                r += 1
+        # quando terminar é pq sobrou os maiores, so adicionar ao fim caso haja
+        result = result + left[l:]
+        result = result + right[r:]
+        return result
+
+    w = 1  # tamanho do bloco atual
+    while w < len(arr):
+        # realizar um for em pares esquerda = [i0:w].. esquerda = [i2:w2].. [i4:w4]....
+        for i in range(
+            w, len(arr), w * 2
+        ):  # merge pares (tamanho do bloco) ate o fim do array
+            # full bock = w*2, L = w:b/2, R = [b/2 :w]
+            left = arr[i - w : i]
+            right = arr[i : i + w]
+            merged = merge_(left, right)
+
+            arr[i - w : i + w] = merged
+        w = w * 2  # dobrar tamanho do bloco pois foram merged
+    return arr, (ns() - start), "MERGE NAO-RECURSIVO 3 (based)"
+
+
 showResults(
     original,
     [
@@ -230,35 +271,6 @@ showResults(
         bubble(original.copy()),
         merge_nr(original.copy()),
         merge_nr2(original.copy()),
-        # merge_nr3(original.copy()),
+        merge_nr3(original.copy()),
     ],
 )
-
-
-# def merge_nr3(arr: list[int]) -> SortResult:
-#     start = ns()
-#     n = len(arr)
-#     width = 1
-#     result = arr[:]
-
-#     def merge(left, right):
-#         merged = []
-#         i = j = 0
-#         while i < len(left) and j < len(right):
-#             if left[i] <= right[j]:
-#                 merged.append(left[i])
-#                 i += 1
-#             else:
-#                 merged.append(right[j])
-#                 j += 1
-#         merged.extend(left[i:])
-#         merged.extend(right[j:])
-#         return merged
-
-#     while width < n:
-#         for i in range(0, n, 2 * width):
-#             left = result[i : i + width]
-#             right = result[i + width : i + 2 * width]
-#             result[i : i + 2 * width] = merge(left, right)
-#         width *= 2
-#     return result, (ns() - start), "MERGE NAO-RECURSIVO 3"
