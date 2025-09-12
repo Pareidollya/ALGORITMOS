@@ -13,8 +13,8 @@ def gerar_array(tamanho, limite_min=0, limite_max=100):
     return random.sample(range(limite_min, limite_max + 1), tamanho)
 
 
-original = gerar_array(100, 1, 101)
-# original = [53, 63, 26, 2, 57, 72, 52, 79, 46, 92, 91]
+# original = gerar_array(100, 1, 101)
+original = [53, 63, 26, 2, 57, 72, 52, 79, 46, 92]
 
 
 def getStrList(results: list[int], show_max=20) -> str:
@@ -263,14 +263,50 @@ def merge_nr3(arr: list[int]) -> SortResult:
     return arr, (ns() - start), "MERGE NAO-RECURSIVO 3 (based)"
 
 
+def quickSort(arr: list[int]) -> SortResult:
+    start = ns()
+
+    def partition(
+        arr,
+    ):  # particionar, colocando menores que pivo na esquerda e maiores na direita
+        p = arr[len(arr) - 1]
+        i = -1
+        for j in range(len(arr)):
+            if arr[j] < p:  # caso j seja menor que o pivo
+                i += 1  # avança i
+                arr[i], arr[j] = arr[j], arr[i]  # swap
+            # else incrementa j
+
+        # colocar pivo no centro da lista ao finalizar
+        arr[i + 1], arr[j] = arr[j], arr[i + 1]
+        return arr, (i + 1)
+
+    arr_, p = partition(arr)
+    # esquerda = [0:p], direita = [p:]
+    L, R = arr_[0:p], arr_[p + 1 :]
+
+    wl, wr = len(L), 1
+    while wl > 1 or wr < len(L):  # ir reduzindo tamanho da partição
+        if wl > 1:
+            L[:wl] = partition(L[:wl])[0]
+            wl -= 1
+        if wr < len(R):
+            R[:wr] = partition(R[:wr])[0]
+            wr += 1
+    arr_[0:p], arr[p + 1 :] = L, R
+
+    return arr_, (ns() - start), "QUICK SORT"
+
+
 showResults(
     original,
     [
-        selection(original.copy()),
-        insertion(original.copy()),
-        bubble(original.copy()),
-        merge_nr(original.copy()),
-        merge_nr2(original.copy()),
-        merge_nr3(original.copy()),
+        # selection(original.copy()),
+        # insertion(original.copy()),
+        # bubble(original.copy()),
+        # merge_nr(original.copy()),
+        # merge_nr2(original.copy()),
+        # merge_nr3(original.copy()),
+        quickSort([53, 63, 26, 2, 57, 72, 52, 79, 92, 46]),
     ],
 )
