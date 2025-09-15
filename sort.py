@@ -13,8 +13,8 @@ def gerar_array(tamanho, limite_min=0, limite_max=100):
     return random.sample(range(limite_min, limite_max + 1), tamanho)
 
 
-# original = gerar_array(100, 1, 101)
-original = [53, 63, 26, 2, 57, 72, 52, 79, 46, 92]
+original = gerar_array(100000, 1, 100001)
+# original = [53, 63, 26, 2, 57, 72, 52, 79, 46, 92]
 
 
 def getStrList(results: list[int], show_max=20) -> str:
@@ -30,7 +30,7 @@ def showResults(v: list, results: list[SortResult]):
 
     for result, time_execution, method in results:
         # getStrList(result)
-        print(f"{method}\nResut: {result}\nTime : {time_execution:.6f}\n")
+        print(f"{method}\nResut: {len(result)}\nTime : {time_execution:.6f}\n")
 
 
 def ns() -> int:
@@ -263,6 +263,33 @@ def merge_nr3(arr: list[int]) -> SortResult:
     return arr, (ns() - start), "MERGE NAO-RECURSIVO 3 (based)"
 
 
+def merge_recursive(arr: list[int]) -> SortResult:
+    start = ns()
+
+    def merge_(left: list[int], right: list[int]):
+        r = 0
+        l = 0
+        result = []
+        while l < len(left) and r < len(right):
+            if left[l] <= right[r]:
+                result.append(left[l])
+                l += 1
+            else:
+                result.append(right[r])
+                r += 1
+        # quando terminar é pq sobrou os maiores, so adicionar ao fim caso haja
+        result = result + left[l:]
+        result = result + right[r:]
+        return result
+
+    if len(arr) > 1:
+        slice_ = len(arr) // 2
+        L, R = arr[:slice_], arr[slice_:]
+
+        arr = merge_(merge_recursive(L)[0], merge_recursive(R)[0])
+    return arr, (ns() - start), "MERGE RECURSIVO (NOT BASED)"
+
+
 def quickSort(arr: list[int]) -> SortResult:
     start = ns()
 
@@ -281,21 +308,12 @@ def quickSort(arr: list[int]) -> SortResult:
         arr[i + 1], arr[j] = arr[j], arr[i + 1]
         return arr, (i + 1)
 
-    arr_, p = partition(arr)
-    # esquerda = [0:p], direita = [p:]
-    L, R = arr_[0:p], arr_[p + 1 :]
+    if len(arr) >= 1:
+        arr_, p = partition(arr)
+        # esquerda = [0:p], direita = [p:]
+        arr = quickSort(arr_[:p])[0] + [arr[p]] + quickSort(arr_[p + 1 :])[0]
 
-    wl, wr = len(L), 1
-    while wl > 1 or wr < len(L):  # ir reduzindo tamanho da partição
-        if wl > 1:
-            L[:wl] = partition(L[:wl])[0]
-            wl -= 1
-        if wr < len(R):
-            R[:wr] = partition(R[:wr])[0]
-            wr += 1
-    arr_[0:p], arr[p + 1 :] = L, R
-
-    return arr_, (ns() - start), "QUICK SORT"
+    return arr, (ns() - start), "QUICK SORT"
 
 
 showResults(
@@ -306,7 +324,8 @@ showResults(
         # bubble(original.copy()),
         # merge_nr(original.copy()),
         # merge_nr2(original.copy()),
-        # merge_nr3(original.copy()),
-        quickSort([53, 63, 26, 2, 57, 72, 52, 79, 92, 46]),
+        merge_nr3(original.copy()),
+        merge_recursive(original.copy()),
+        quickSort(original.copy()),
     ],
 )
