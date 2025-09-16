@@ -13,7 +13,7 @@ def gerar_array(tamanho, limite_min=0, limite_max=100):
     return random.sample(range(limite_min, limite_max + 1), tamanho)
 
 
-original = gerar_array(100000, 1, 100001)
+original = gerar_array(10000, 0, 10000)
 # original = [53, 63, 26, 2, 57, 72, 52, 79, 46, 92]
 
 
@@ -263,7 +263,7 @@ def merge_nr3(arr: list[int]) -> SortResult:
     return arr, (ns() - start), "MERGE NAO-RECURSIVO 3 (based)"
 
 
-def merge_recursive(arr: list[int]) -> SortResult:
+def merge_r(arr: list[int]) -> SortResult:
     start = ns()
 
     def merge_(left: list[int], right: list[int]):
@@ -286,7 +286,7 @@ def merge_recursive(arr: list[int]) -> SortResult:
         slice_ = len(arr) // 2
         L, R = arr[:slice_], arr[slice_:]
 
-        arr = merge_(merge_recursive(L)[0], merge_recursive(R)[0])
+        arr = merge_(merge_r(L)[0], merge_r(R)[0])
     return arr, (ns() - start), "MERGE RECURSIVO (NOT BASED)"
 
 
@@ -316,16 +316,40 @@ def quickSort(arr: list[int]) -> SortResult:
     return arr, (ns() - start), "QUICK SORT"
 
 
+def countingSort(arr: list[int]) -> SortResult:
+    start = ns()
+    # get max value
+    max_ = arr[0]
+    for value in arr:
+        if value > max_:
+            max_ = value
+
+    # count vector
+    count = [0, 0] * max_
+
+    # contagem para posição relativa
+    for i in arr:
+        count[i] += 1
+
+    result = []
+    for num in range(len(count)):
+        if count[num] > 0:
+            result += [num] * count[num]
+
+    return result, (ns() - start), "COUNTING SORT"
+
+
 showResults(
     original,
     [
-        # selection(original.copy()),
-        # insertion(original.copy()),
-        # bubble(original.copy()),
-        # merge_nr(original.copy()),
-        # merge_nr2(original.copy()),
-        merge_nr3(original.copy()),
-        merge_recursive(original.copy()),
+        selection(original.copy()),
+        insertion(original.copy()),
+        bubble(original.copy()),
+        merge_nr(original.copy()),  # insertion hibrido kk
+        merge_nr2(original.copy()),
+        merge_nr3(original.copy()),  # real merge (based)
+        merge_r(original.copy()),
         quickSort(original.copy()),
+        countingSort(original.copy()),
     ],
 )
