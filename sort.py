@@ -10,10 +10,10 @@ SortResult: TypeAlias = tuple[list[int], int, str]
 def gerar_array(tamanho, limite_min=0, limite_max=100):
     if tamanho > (limite_max - limite_min + 1):
         raise ValueError("Intervalo pequeno demais para gerar números únicos.")
-    return random.sample(range(limite_min, limite_max + 1), tamanho)
+    return random.sample(range(limite_max), tamanho)
 
 
-original = gerar_array(10000, 0, 10000)
+original = gerar_array(10000, 0, 1000000)
 # original = [53, 63, 26, 2, 57, 72, 52, 79, 46, 92]
 
 
